@@ -23,7 +23,7 @@ class LeggedEnvBipedal(BaseEnv):
     """Environment for locomotion tasks using a legged robot."""
 
     def __init__(self, cfg: LeggedEnvBipedalCfg):
-        """Initializes the environment instance.
+        """Initializes the environment  instance.
 
         Parses the provided config file, calls create_sim() (which creates, simulation,
         terrain and environments), initializes pytorch buffers used during training.
