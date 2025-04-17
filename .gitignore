@@ -64,3 +64,4 @@ runs
 # cluster files
 *.sif
 *.tar
+/build/
