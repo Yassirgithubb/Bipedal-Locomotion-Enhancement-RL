@@ -1,0 +1,243 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- This file contains the description of dynaarm. -->
+<robot name="dynaarm">
+  <!-- [kg * m^2] -->
+  <!-- [m] -->
+  <!-- measured -->
+  <!-- Base link -->
+  <link name="base">
+    <visual>
+      <geometry>
+        <mesh filename="../meshes/300_base_anymal_mesh.dae"/>
+      </geometry>
+      <material name="carbon_fiber">
+        <color rgba=" 0.15 0.15 0.15 1"/>
+      </material>
+    </visual>
+    <collision>
+      <origin rpy="0 0 0" xyz="0 0 -0.04"/>
+      <geometry>
+        <!--<mesh filename="../meshes/300_base_anymal_mesh_col.dae"/>-->
+        <cylinder length="0.08" radius="0.06"/>
+      </geometry>
+    </collision>
+  </link>
+  <!-- Fixed joint to add dummy inertia link -->
+  <joint name="dynaarm_base_to_dynaarm_base_inertia" type="fixed">
+    <parent link="base"/>
+    <child link="dynaarm_base_inertia"/>
+    <origin rpy="0 0 0" xyz="0 0 0"/>
+  </joint>
+  <!-- Dummy inertia link, because KDL cannot have inertia on the base link -->
+  <link name="dynaarm_base_inertia">
+    <inertial>
+      <mass value="1.53"/>
+      <origin rpy="0 0 0" xyz="2.6302343e-05 -0.000226836219 -0.03053573033"/>
+      <inertia ixx="0.0018534" ixy="-4.535e-06" ixz="9.01e-07" iyy="0.0018514" iyz="5.559454625e-06" izz="0.00223447"/>
+    </inertial>
+  </link>
+  <link name="dynaarm_SHOULDER">
+    <visual>
+      <geometry>
+        <mesh filename="../meshes/301_shoulder_mesh.dae"/>
+      </geometry>
+      <material name="carbon_fiber">
+        <color rgba=" 0.15 0.15 0.15 1"/>
+      </material>
+    </visual>
+    <!--<collision>
+      <geometry>
+        <mesh filename="../meshes/301_shoulder_mesh_col.dae"/>
+      </geometry>
+    </collision>-->
+    <inertial>
+      <mass value="2.63"/>
+      <origin rpy="0 0 0" xyz="0.0 0.0 -0.0017336"/>
+      <inertia ixx="0.01030121" ixy="-5.085e-05" ixz="0.0" iyy="0.0030165" iyz="0.0" izz="0.01009904"/>
+    </inertial>
+  </link>
+  <link name="dynaarm_UPPERARM">
+    <visual>
+      <geometry>
+        <mesh filename="../meshes/302_upperarm_mesh.dae"/>
+      </geometry>
+      <material name="carbon_fiber">
+        <color rgba=" 0.15 0.15 0.15 1"/>
+      </material>
+    </visual>
+    <collision>
+      <origin rpy="0 1.57 0" xyz="0.206 0.0 0.0"/>
+      <geometry>
+        <cylinder length="0.206" radius="0.042"/>
+      </geometry>
+    </collision>
+    <inertial>
+      <mass value="1.394"/>
+      <origin rpy="0 0 0" xyz="0.21109 2.2e-05 -0.000317"/>
+      <inertia ixx="0.00116179" ixy="-7.2e-07" ixz="-0.00014045" iyy="0.046092126" iyz="7e-09" izz="0.04627953"/>
+    </inertial>
+  </link>
+  <link name="dynaarm_ELBOW">
+    <visual>
+      <geometry>
+        <mesh filename="../meshes/303_elbow_mesh.dae"/>
+      </geometry>
+      <material name="carbon_fiber">
+        <color rgba=" 0.15 0.15 0.15 1"/>
+      </material>
+    </visual>
+    <collision>
+      <origin rpy="0 0 0" xyz="0.0 0.0 0.0"/>
+      <geometry>
+        <sphere radius="0.05"/>
+      </geometry>
+    </collision>
+    <inertial>
+      <mass value="1.3"/>
+      <origin rpy="0 0 0" xyz="-0.000819 -0.087193 -0.000703"/>
+      <inertia ixx="0.00188444" ixy="4.5787e-05" ixz="1.366e-05" iyy="0.00112312" iyz="-4.311e-05" izz="0.00152649"/>
+    </inertial>
+  </link>
+  <joint name="SH_ROT" type="revolute">
+    <parent link="base"/>
+    <child link="dynaarm_SHOULDER"/>
+    <axis xyz="0 0 1"/>
+    <limit effort="40" lower="-3.14159265359" upper="3.14159265359" velocity="17"/>
+    <!-- limit effort also defines torque limit and freeze controller gains -->
+    <origin rpy="0 0 0" xyz="0 0 0.06"/>
+    <dynamics damping="0.3" friction="0.0"/>
+  </joint>
+  <joint name="SH_FLE" type="revolute">
+    <parent link="dynaarm_SHOULDER"/>
+    <child link="dynaarm_UPPERARM"/>
+    <axis xyz="0 0 -1"/>
+    <limit effort="40" lower="-1.9707963267948965" upper="1.9707963267948965" velocity="17"/>
+    <!-- limit effort also defines torque limit and freeze controller gains -->
+    <origin rpy="1.5707963267948966 -1.5707963267948966 0" xyz="0 0 0.0"/>
+    <dynamics damping="0.3" friction="0.0"/>
+  </joint>
+  <joint name="EL_FLE" type="revolute">
+    <parent link="dynaarm_UPPERARM"/>
+    <child link="dynaarm_ELBOW"/>
+    <axis xyz="0 0 1"/>
+    <limit effort="40" lower="-3.141592653589793" upper="3.141592653589793" velocity="17"/>
+    <!-- limit effort also defines torque limit and freeze controller gains -->
+    <origin rpy="3.141592653589793 0 0" xyz="0.412 0 0"/>
+    <dynamics damping="0.3" friction="0.0"/>
+  </joint>
+  <link name="dynaarm_FOREARM">
+    <visual>
+      <geometry>
+        <mesh filename="../meshes/400_forearm_4tube_longer_mesh.dae"/>
+      </geometry>
+      <material name="carbon_fiber">
+        <color rgba=" 0.15 0.15 0.15 1"/>
+      </material>
+    </visual>
+    <collision>
+      <origin rpy="0 0 0" xyz="0.0 0.0 0.135"/>
+      <geometry>
+        <cylinder length="0.4" radius="0.025"/>
+      </geometry>
+    </collision>
+    <inertial>
+      <mass value="0.154"/>
+      <origin rpy="0 0 0" xyz="0.0 0.0 0.133"/>
+      <inertia ixx="0.00185" ixy="0.0" ixz="0.0" iyy="0.001849" iyz="0.0" izz="0.000115"/>
+    </inertial>
+  </link>
+  <joint name="FA_ROT" type="revolute">
+    <parent link="dynaarm_ELBOW"/>
+    <child link="dynaarm_FOREARM"/>
+    <axis xyz="0 0 1"/>
+    <limit effort="40" lower="-3.14159265359" upper="3.14159265359" velocity="17"/>
+    <!-- limit effort also defines torque limit and freeze controller gains -->
+    <origin rpy="1.57079632679 0 1.57079632679" xyz="0.025 -0.092 0"/>
+    <dynamics damping="0.3" friction="0.0"/>
+  </joint>
+  <link name="dynaarm_FOREARM_wrist1">
+    <visual>
+      <geometry>
+        <mesh filename="../meshes/406_forearm_4tube_wrist1_mesh.dae" scale="1.0 1.0 1.0"/>
+      </geometry>
+    </visual>
+    <inertial>
+      <mass value="0.05"/>
+      <origin rpy="0 0 0" xyz="0.0 -0.0284 0.0223"/>
+      <inertia ixx="3.2e-05" ixy="0.0" ixz="0.0" iyy="3.2999999999999996e-05" iyz="-5.4e-06" izz="1.7e-05"/>
+    </inertial>
+  </link>
+  <joint name="FA_ROT_wrist1" type="fixed">
+    <parent link="dynaarm_FOREARM"/>
+    <child link="dynaarm_FOREARM_wrist1"/>
+    <origin rpy="0 0 0" xyz="0.0 0.0 0.35"/>
+    <limit effort="2000" lower="0" upper="0" velocity="0"/>
+    <!-- limit effort also defines torque limit and freeze controller gains -->
+    <dynamics damping="0.0" friction="0.0"/>
+  </joint>
+  <link name="dynaarm_WRIST_1">
+    <visual>
+      <geometry>
+        <mesh filename="../meshes/500_wrist1_mesh.dae" scale="1.0 1.0 1.0"/>
+      </geometry>
+    </visual>
+    <collision>
+      <origin rpy="0 1.5707963267948966 0" xyz="0.095 0 0.03"/>
+      <geometry>
+        <cylinder length="0.09" radius="0.055"/>
+      </geometry>
+    </collision>
+    <inertial>
+      <mass value="1.79"/>
+      <origin rpy="0 0 0" xyz="0.047 0.0 0.029"/>
+      <inertia ixx="0.0016719999999999999" ixy="0.0" ixz="0.00012969999999999998" iyy="0.004985" iyz="-3.7e-06" izz="0.005209999999999999"/>
+    </inertial>
+  </link>
+  <link name="dynaarm_WRIST_2">
+    <visual>
+      <geometry>
+        <mesh filename="../meshes/600_wrist2_plate_mesh.dae" scale="1.0 1.0 1.0"/>
+      </geometry>
+    </visual>
+    <inertial>
+      <mass value="0.03"/>
+      <origin rpy="0 0 0" xyz="0.0 0.0 0.0064"/>
+      <inertia ixx="7.4e-06" ixy="0.0" ixz="0.0" iyy="7.4e-06" iyz="0.0" izz="1.4199999999999998e-05"/>
+    </inertial>
+  </link>
+  <joint name="WRIST_1" type="revolute">
+    <parent link="dynaarm_FOREARM_wrist1"/>
+    <child link="dynaarm_WRIST_1"/>
+    <axis xyz="0 0 1"/>
+    <limit effort="40" lower="-1.5707963267948966" upper="1.5707963267948966" velocity="17"/>
+    <!-- limit effort also defines torque limit and freeze controller gains -->
+    <origin rpy="0 -1.5707963267948966 -1.5707963267948966" xyz="0.0 -0.03 0.055"/>
+    <dynamics damping="0.3" friction="0.0"/>
+  </joint>
+  <joint name="WRIST_2" type="revolute">
+    <parent link="dynaarm_WRIST_1"/>
+    <child link="dynaarm_WRIST_2"/>
+    <axis xyz="0 0 1"/>
+    <limit effort="40" lower="-3.141592653589793" upper="3.141592653589793" velocity="17"/>
+    <!-- limit effort also defines torque limit and freeze controller gains -->
+    <origin rpy="0 1.5707963267948966 0" xyz="0.12 0.0 0.03"/>
+    <dynamics damping="0.3" friction="0.0"/>
+  </joint>
+  <link name="dynaarm_END_EFFECTOR">
+    <!-- used in the elbow joint to attach to the mimic joint and and to the elbow joint -->
+    <visual>
+      <origin rpy="0 0 0" xyz="-0.0005 0 0"/>
+      <geometry>
+        <box size="0.001 0.001 0.001"/>
+      </geometry>
+    </visual>
+  </link>
+  <joint name="ee_fix_joint" type="fixed" dont_collapse="true">
+    <parent link="dynaarm_WRIST_2"/>
+    <child link="dynaarm_END_EFFECTOR"/>
+    <origin rpy="0 0 0" xyz="0 0 0"/>
+    <limit effort="2000" lower="0" upper="0" velocity="0"/>
+    <!-- limit effort also defines torque limit and freeze controller gains -->
+    <dynamics damping="0.0" friction="0.0"/>
+  </joint>
+</robot>

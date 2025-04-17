@@ -1,0 +1,177 @@
+<?xml version="1.0"?>
+
+<robot xmlns:xacro="http://www.ros.org/wiki/xacro">
+
+  <xacro:macro name="alphasense_macro" params="name:=alphasense
+                                               parent:=lidar
+                                               simulate_color_cameras:=false
+                                               simulate_monochrome_cameras:=false
+                                               parameter_file:=package://anymal_c_rsl/urdf/modules/alphasense/example_params.yaml">
+
+    <xacro:property name="parameters"         value="${load_yaml(parameter_file)}"/>
+    <xacro:property name="parent_to_imu"      value="${parameters['parent_to_imu']['pose']}"/>
+    <xacro:property name="base_to_mesh"       value="${parameters['base_to_mesh']['pose']}"/>
+    <xacro:property name="imu_to_cam0"        value="${parameters['imu_to_cam0']['pose']}"/>
+    <xacro:property name="imu_to_cam1"        value="${parameters['imu_to_cam1']['pose']}"/>
+    <xacro:property name="imu_to_cam2"        value="${parameters['imu_to_cam2']['pose']}"/>
+    <xacro:property name="imu_to_cam3"        value="${parameters['imu_to_cam3']['pose']}"/>
+    <xacro:property name="imu_to_cam4"        value="${parameters['imu_to_cam4']['pose']}"/>
+    <xacro:property name="imu_to_cam5"        value="${parameters['imu_to_cam5']['pose']}"/>
+    <xacro:property name="imu_to_cam6"        value="${parameters['imu_to_cam6']['pose']}"/>
+
+    <!-- IMU link -->
+    <link name="imu_sensor_frame"/>
+
+    <joint name="${parent}_to_${name}" type="fixed">
+      <parent link="${parent}"/>
+      <child link="imu_sensor_frame"/>
+      <origin xyz="${parent_to_imu['x']} ${parent_to_imu['y']} ${parent_to_imu['z']}"
+              rpy="${parent_to_imu['roll']} ${parent_to_imu['pitch']} ${parent_to_imu['yaw']}"/>
+    </joint>
+
+    <!-- Visualization & Crash Box -->
+    <link name="${name}_mesh">
+      <visual>
+        <origin xyz="0 0 0" rpy="0 0 0"/>
+        <geometry>
+          <mesh filename="package://anymal_c_rsl/urdf/modules/alphasense/alphasense.stl" scale=".001 .001 .001"/>
+        </geometry>
+        <material name="anymal_material"/>
+      </visual>
+      <collision>
+        <origin xyz="0.0144025 0.0 0.235" rpy="0 0 0"/>
+        <geometry>
+          <box size="0.128 0.165 0.098"/>
+        </geometry>
+      </collision>
+      <inertial>
+        <mass value="0.5"/>
+        <origin xyz="0.01243 0.000687 0.23"/>
+        <inertia ixx= "0.001237"
+                 ixy= "0.000016"
+                 ixz= "0.000005"
+                 iyy= "0.000897"
+                 iyz= "-0.00001143"
+                 izz= "0.00149"/>
+      </inertial>
+    </link>
+
+    <joint name="base_to_${name}_mesh" type="fixed">
+      <parent link="base"/>
+      <child link="${name}_mesh"/>
+      <origin xyz="${base_to_mesh['x']} ${base_to_mesh['y']} ${base_to_mesh['z']}"
+              rpy="${base_to_mesh['roll']} ${base_to_mesh['pitch']} ${base_to_mesh['yaw']}"/>
+    </joint>
+
+    <!-- Camera Frame Macro -->
+    <xacro:macro name="camera_frame_element_macro" params="camera_name simulate_camera simulation_update_rate:=5.0 *origin_camera_frame">
+      <link name="${camera_name}_sensor_frame"/>
+
+      <!-- Real -->
+      <xacro:unless value="${simulate_camera}">
+        <joint name="imu_sensor_frame_to_${camera_name}_sensor_frame" type="fixed">
+          <parent link="imu_sensor_frame"/>
+          <child link="${camera_name}_sensor_frame"/>
+          <xacro:insert_block name="origin_camera_frame"/>
+        </joint>
+      </xacro:unless>
+
+      <!-- Simulation: introduce helper frame to respect orientation of optical frame in gazebo plugin -->
+      <xacro:if value="${simulate_camera}">
+        <!-- Additional frame to align x-axis for camera plugin with frame ${camera_name}_sensor_frame -->
+        <link name="${camera_name}_sensor_frame_helper"/>
+        <joint name="imu_sensor_frame_to_${camera_name}_sensor_frame" type="fixed">
+          <parent link="imu_sensor_frame"/>
+          <child link="${camera_name}_sensor_frame_helper"/>
+          <xacro:insert_block name="origin_camera_frame"/>
+        </joint>
+
+        <joint name="${camera_name}_sensor_frame_helper_to_${camera_name}_sensor_frame" type="fixed">
+          <parent link="${camera_name}_sensor_frame_helper"/>
+          <child link="${camera_name}_sensor_frame"/>
+          <origin xyz="0 0 0" rpy="${-pi/2} ${-pi/2} ${-pi}"/>
+        </joint>
+
+        <!-- Gazebo plugin -->
+        <gazebo reference="${camera_name}_sensor_frame">
+          <sensor type="camera" name="${camera_name}_sensor_frame">
+            <always_on>1</always_on>
+            <visualize>true</visualize>
+            <update_rate>${simulation_update_rate}</update_rate>
+            <camera name="${camera_name}_sensor_frame">
+              <horizontal_fov>2.19911</horizontal_fov>
+              <image>
+                <width>720</width>
+                <height>540</height>
+                <format>R8G8B8</format>
+              </image>
+              <clip>
+                <near>0.02</near>
+                <far>300</far>
+              </clip>
+            </camera>
+            <plugin name="camera_controller" filename="libgazebo_ros_camera.so">
+              <alwaysOn>true</alwaysOn>
+              <updateRate>0.0</updateRate>
+              <cameraName>alphasense_driver_ros/${camera_name}</cameraName>
+              <imageTopicName>image_raw</imageTopicName>
+              <cameraInfoTopicName>camera_info</cameraInfoTopicName>
+              <frameName>${camera_name}_sensor_frame</frameName>
+              <hackBaseline>0.0</hackBaseline>
+              <distortionK1>0.0</distortionK1>
+              <distortionK2>0.0</distortionK2>
+              <distortionK3>0.0</distortionK3>
+              <distortionT1>0.0</distortionT1>
+              <distortionT2>0.0</distortionT2>
+            </plugin>
+          </sensor>
+        </gazebo>
+      </xacro:if> <!-- simulation -->
+    </xacro:macro>
+
+    <!-- Camera 0 (monochrome) -->
+    <xacro:camera_frame_element_macro camera_name="cam0" simulate_camera="${simulate_monochrome_cameras}" simulation_update_rate="20.0">
+      <origin xyz="${imu_to_cam0['x']} ${imu_to_cam0['y']} ${imu_to_cam0['z']}"
+              rpy="${imu_to_cam0['roll']} ${imu_to_cam0['pitch']} ${imu_to_cam0['yaw']}"/>
+    </xacro:camera_frame_element_macro>
+
+    <!-- Camera 1 (monochrome) -->
+    <xacro:camera_frame_element_macro camera_name="cam1" simulate_camera="${simulate_monochrome_cameras}" simulation_update_rate="20.0">
+      <origin xyz="${imu_to_cam1['x']} ${imu_to_cam1['y']} ${imu_to_cam1['z']}"
+              rpy="${imu_to_cam1['roll']} ${imu_to_cam1['pitch']} ${imu_to_cam1['yaw']}"/>
+    </xacro:camera_frame_element_macro>
+
+    <!-- Camera 2 (monochrome) -->
+    <xacro:camera_frame_element_macro camera_name="cam2" simulate_camera="${simulate_monochrome_cameras}" simulation_update_rate="20.0">
+      <origin xyz="${imu_to_cam2['x']} ${imu_to_cam2['y']} ${imu_to_cam2['z']}"
+              rpy="${imu_to_cam2['roll']} ${imu_to_cam2['pitch']} ${imu_to_cam2['yaw']}"/>
+    </xacro:camera_frame_element_macro>
+
+    <!-- Camera 3 (color) -->
+    <xacro:camera_frame_element_macro camera_name="cam3"
+                                      simulate_camera="${simulate_color_cameras}" simulation_update_rate="3.0">
+      <origin xyz="${imu_to_cam3['x']} ${imu_to_cam3['y']} ${imu_to_cam3['z']}"
+              rpy="${imu_to_cam3['roll']} ${imu_to_cam3['pitch']} ${imu_to_cam3['yaw']}"/>
+    </xacro:camera_frame_element_macro>
+
+    <!-- Camera 4 (color) -->
+    <xacro:camera_frame_element_macro camera_name="cam4" simulate_camera="${simulate_color_cameras}" simulation_update_rate="3.0">
+      <origin xyz="${imu_to_cam4['x']} ${imu_to_cam4['y']} ${imu_to_cam4['z']}"
+              rpy="${imu_to_cam4['roll']} ${imu_to_cam4['pitch']} ${imu_to_cam4['yaw']}"/>
+    </xacro:camera_frame_element_macro>
+
+    <!-- Camera 5 (color) -->
+    <xacro:camera_frame_element_macro camera_name="cam5" simulate_camera="${simulate_color_cameras}" simulation_update_rate="3.0">
+      <origin xyz="${imu_to_cam5['x']} ${imu_to_cam5['y']} ${imu_to_cam5['z']}"
+              rpy="${imu_to_cam5['roll']} ${imu_to_cam5['pitch']} ${imu_to_cam5['yaw']}"/>
+    </xacro:camera_frame_element_macro>
+
+    <!-- Camera 6 (color) -->
+    <xacro:camera_frame_element_macro camera_name="cam6" simulate_camera="${simulate_color_cameras}" simulation_update_rate="3.0">
+      <origin xyz="${imu_to_cam6['x']} ${imu_to_cam6['y']} ${imu_to_cam6['z']}"
+              rpy="${imu_to_cam6['roll']} ${imu_to_cam6['pitch']} ${imu_to_cam6['yaw']}"/>
+    </xacro:camera_frame_element_macro>
+
+  </xacro:macro>
+
+</robot>

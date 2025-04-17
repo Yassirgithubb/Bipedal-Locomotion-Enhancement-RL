@@ -1,0 +1,12 @@
+**/.git
+_*
+tools/docker2/build*.sh
+tools/docker2/Dockerfile*
+tools/docker2/run*.sh
+*.bat
+
+# VS Code
+.vscode
+# logs
+logs
+runs

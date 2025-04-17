@@ -1,0 +1,63 @@
+program: train.py
+method: grid
+metric:
+  goal: maximize
+  name: Train/mean_reward
+
+parameters:
+  rew_package_lifted:
+    value: 0
+
+  rew_tracking_lin_vel_standing:
+    value: 0
+  rew_tracking_ang_vel_standing:
+    value: 1000
+  rew_termination:
+    value: -1000
+  rew_base_height:
+    value: -1000
+  rew_height:
+    value: 1
+  rew_stand_straight:
+    value: 5.0
+  rew_straight_knees:
+    value: 0.0
+  rew_shoulder_symmetry:
+    value: -0.0
+  
+  torques:
+    value: -1.5e-5
+  dof_acc:
+    value: -2.5e-7
+  dof_vel:
+    value: -2.5e-4
+  action_rate:
+    value: -1.0e-2
+  shaping_mult:
+    value: 1
+
+  curiosity_embedding_size:
+    value: 1
+  curiosity_layers_target:
+    value: 2
+  curiosity_mult_layers_predictor:
+    value: 2
+  curiosity_learning_rate:
+    value: 0.001
+  curiosity_weight:
+    value: 100
+  rew_norm:
+    value: False
+  gate_norm:
+    value: True
+
+  seed:
+    values: [1,2,3]
+
+command:
+  - python3
+  - ${program}
+  - "--headless"
+  - "--task=package_grabbing"
+  - "--num_envs=4096"
+  - "--max_iterations=2000"

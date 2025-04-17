@@ -1,0 +1,60 @@
+"""
+Test runtime throughput of different NN architectures.
+"""
+
+# python
+import torch
+import torch.nn as nn
+import time
+
+
+def profile(model: torch.nn.Module, x: torch.Tensor, benchmark: bool, nb_iters: int):
+    # change to benchmark mode
+    torch.backends.cudnn.benchmark = benchmark
+    # warmup
+    for _ in range(10000):
+        _ = model(x)
+    # measure time
+    torch.cuda.synchronize()
+    t0 = time.time()
+    for _ in range(nb_iters):
+        _ = model(x)
+    torch.cuda.synchronize()
+    t1 = time.time()
+
+    return (t1 - t0) / nb_iters
+
+
+if __name__ == "__main__":
+    # create model one
+    model1 = nn.Sequential(
+        nn.Conv1d(24, 256, kernel_size=(12,), stride=(6,), groups=4),
+        nn.ReLU(),
+        nn.Conv1d(256, 256, kernel_size=(6,), stride=(3,), padding=(2,), groups=4),
+        nn.ReLU(),
+        nn.Conv1d(256, 256, kernel_size=(3,), stride=(1,), padding=(1,), groups=4),
+        nn.ReLU(),
+    ).cuda()
+
+    x = torch.randn(64, 24, 224, device="cuda")
+    print(torch.cuda.get_device_name(0))
+    time0 = profile(model1, x, benchmark=False, nb_iters=100)
+    print("Conv1d model, benchmark=False, {:.3f} ms/iter".format(time0 * 1000))
+    time1 = profile(model1, x, benchmark=True, nb_iters=100)
+    print("Conv1d model, benchmark=True, {:.3f} ms/iter".format(time1 * 1000))
+
+    # create model 2
+    model2 = nn.Sequential(
+        nn.Conv2d(8, 32, kernel_size=(8, 8), stride=(4, 4)),
+        nn.ReLU(),
+        nn.Conv2d(32, 64, kernel_size=(4, 4), stride=(2, 2), padding=(1, 1)),
+        nn.ReLU(),
+        nn.Conv2d(64, 64, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1)),
+        nn.ReLU(),
+    ).cuda()
+
+    x = torch.randn(64, 8, 224, 224, device="cuda")
+    time0 = profile(model2, x, benchmark=False, nb_iters=100)
+    print("Conv2d model, benchmark=False, {:.3f} ms/iter".format(time0 * 1000))
+    time1 = profile(model2, x, benchmark=True, nb_iters=100)
+    print("Conv2d model, benchmark=True, {:.3f} ms/iter".format(time1 * 1000))

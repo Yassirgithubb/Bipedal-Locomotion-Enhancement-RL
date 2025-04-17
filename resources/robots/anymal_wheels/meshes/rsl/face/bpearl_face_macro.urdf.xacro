@@ -1,0 +1,62 @@
+<?xml version="1.0"?>
+
+<robot xmlns:xacro="http://www.ros.org/wiki/xacro">
+
+  <xacro:macro name="bpearl_face" params="parameter_file:=package://anymal_c_rsl/urdf/face/example_bpearl_front_face_parameter_file.yaml">
+
+    <!-- Parameters from yaml file, specific for each robot and for each face -->
+    <xacro:property name="parameters"                   value="${load_yaml(parameter_file)}"/>
+    <xacro:property name="face"                         value="${parameters['face']}"/>
+    <xacro:property name="bottom_bar"                   value="${parameters['bottom_bar']}"/>
+    <xacro:property name="angle_bottom"                 value="${bottom_bar['angle']}"/>
+    <xacro:property name="width1_bottom"                value="${bottom_bar['width1']}"/>
+    <xacro:property name="width2_bottom"                value="${bottom_bar['width2']}"/>
+    <xacro:property name="right_bar"                    value="${parameters['right_bar']}"/>
+    <xacro:property name="angle_right"                  value="${right_bar['angle']}"/>
+    <xacro:property name="width1_right"                 value="${right_bar['width1']}"/>
+    <xacro:property name="width2_right"                 value="${right_bar['width2']}"/>
+    <xacro:property name="left_bar"                     value="${parameters['left_bar']}"/>
+    <xacro:property name="angle_left"                   value="${left_bar['angle']}"/>
+    <xacro:property name="width1_left"                  value="${left_bar['width1']}"/>
+    <xacro:property name="width2_left"                  value="${left_bar['width2']}"/>
+    <!-- Common parameters for all the faces -->
+    <xacro:property name="Base_r_BaseBpearl_x"          value="0.470"/> <!-- CAD: 0.47  [m] -->
+    <xacro:property name="Base_r_BaseBpearl_z"          value="0.035"/> <!--  CAD: 0.02 [m] -->
+    <xacro:property name="Base_r_BaseBpearl_roll"       value="-2.5761172"/> <!--  [rad] -->
+    <xacro:property name="Base_r_BaseBpearl_pitch"      value="0.2448429"/> <!--  [rad] -->
+    <xacro:property name="Base_r_BaseBpearl_yaw"        value="-1.9356696"/> <!--  [rad] -->
+    <xacro:property name="Base_r_BaseProtection_x"      value="0.414495"/> <!--  [m] -->
+
+    <!-- Generated properties -->
+    <xacro:property name="direction"    value="${1 if face == 'front' else -1}"/>
+    <xacro:property name="delta_yaw"    value="${0.0 if face == 'front' else pi}"/>
+    <xacro:property name="bpearl_name"  value="bpearl_${face}"/>
+
+    <!-- Bpearl -->
+    <xacro:include filename="$(find rslidar_description)/urdf/rslidar_bpearl/rslidar_bpearl.urdf.xacro"/>
+    <xacro:bpearl_macro name="${bpearl_name}" parent="base" topic="/bpearl_${face}/point_cloud" min_range="0.3" collision_range="0.3" samples="440">
+      <origin xyz="${direction * Base_r_BaseBpearl_x} 0.0 ${Base_r_BaseBpearl_z}"
+              rpy="${Base_r_BaseBpearl_roll} ${Base_r_BaseBpearl_pitch} ${Base_r_BaseBpearl_yaw + delta_yaw}"/>
+    </xacro:bpearl_macro>
+
+    <!-- Protection Bars -->
+    <xacro:include filename="$(find anymal_c_rsl)/urdf/protectors/bpearl_protection_bars_macro.urdf.xacro"/>
+    <xacro:protection_bars_macro name="bpearl_${face}_protection_bars"
+                                 parent="base"
+                                 face="${face}"
+                                 angle_bottom="${angle_bottom}"
+                                 width1_bottom="${width1_bottom}"
+                                 width2_bottom="${width2_bottom}"
+                                 angle_right="${angle_right}"
+                                 width1_right="${width1_right}"
+                                 width2_right="${width2_right}"
+                                 angle_left="${angle_left}"
+                                 width1_left="${width1_left}"
+                                 width2_left="${width2_left}">
+      <origin xyz="${direction * Base_r_BaseProtection_x} 0.0 0.0"
+              rpy="0 0 ${delta_yaw}"/>
+    </xacro:protection_bars_macro>
+
+  </xacro:macro>
+
+</robot>

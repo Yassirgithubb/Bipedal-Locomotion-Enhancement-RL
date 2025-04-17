@@ -1,0 +1,47 @@
+<?xml version="1.0"?>
+
+<robot xmlns:xacro="http://www.ros.org/wiki/xacro">
+
+  <xacro:macro name="interface_hatch_macro" params="name:=interface_hatch
+                                            parent:=base
+                                            *origin">
+
+    <!-- Fixed joint base to interface hatch -->
+    <joint name="${parent}_to_${name}" type="fixed">
+      <parent link="${parent}"/>
+      <child link="${name}"/>
+      <xacro:insert_block name="origin"/>
+    </joint>
+
+    <!-- Interface hatch link -->
+    <link name="${name}">
+      <visual>
+        <origin xyz="0.0 0.0 0.0" rpy="0.0 0.0 0.0"/>
+        <geometry>
+          <mesh filename="package://anymal_c_rsl/urdf/modules/interface_hatch/interface_hatch.stl" scale=".001 .001 .001"/>
+        </geometry>
+        <material name="anymal_material"/>
+      </visual>
+      <collision>
+        <origin xyz="0.1158036 0.0 0.0245" rpy="0 0 0"/>
+        <geometry>
+          <box size="0.1817832 0.1296570 0.055"/>
+        </geometry>
+      </collision>
+      <inertial>
+        <mass value="0.293687504"/>
+        <origin xyz="0.115318879473
+                     0.000251718520
+                     0.021931226692"/>
+        <inertia ixx= "0.000687763980844"
+                 ixy= "-0.000001080796219"
+                 ixz= "0.000002713907006"
+                 iyy= "0.001176920719975"
+                 iyz= "-0.000000364550324"
+                 izz= "0.001716726006302"/>
+      </inertial>
+    </link>
+
+  </xacro:macro>
+
+</robot>

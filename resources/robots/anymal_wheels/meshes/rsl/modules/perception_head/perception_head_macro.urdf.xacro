@@ -1,0 +1,66 @@
+<?xml version="1.0"?>
+
+<robot xmlns:xacro="http://www.ros.org/wiki/xacro">
+
+  <xacro:macro name="perception_head_macro" params="name:=perception_head
+                                                    parent:=base
+                                                    simulate_lidar:=false
+                                                    simulate_color_cameras:=false
+                                                    alphasense_parameter_file:=package://anymal_c_rsl/urdf/modules/alphasense/example_params.yaml
+                                                    alphasense_name:=alphasense
+                                                    lidar_name:=lidar
+                                                    lidar_topic:=/lidar/point_cloud
+                                                    *origin">
+
+    <!-- Parent to cage joint, located between mounting plate on trunk and the cage -->
+    <joint name="${parent}_to_${name}_cage" type="fixed">
+      <parent link="${parent}"/>
+      <child link="${name}_cage"/>
+      <xacro:insert_block name="origin"/>
+    </joint>
+
+    <!-- Velodyne cage link -->
+    <link name="${name}_cage">
+      <visual>
+        <origin xyz="0.0 0.0 0.0" rpy="0.0 0.0 0.0"/>
+        <geometry>
+          <mesh filename="package://anymal_c_rsl/urdf/modules/perception_head/perception_head.stl" scale=".001 .001 .001"/>
+        </geometry>
+        <material name="anymal_material"/>
+      </visual>
+      <collision>
+        <origin xyz="0.0080435 0.0 0.1614" rpy="0 0 0"/>
+        <geometry>
+          <box size="0.14151 0.21544 0.1768"/>
+        </geometry>
+      </collision>
+      <inertial>
+        <mass value="0.3879"/>
+        <origin xyz="-0.01163
+                     -0.0000109
+                     0.15412"/>
+        <inertia ixx= "0.011412"
+                 ixy= "-0.00000037"
+                 ixz= "-0.00086643"
+                 iyy= "0.010402"
+                 iyz= "0.00000038"
+                 izz= "0.001749"/>
+      </inertial>
+    </link>
+
+    <!-- Velodyne Puck LITE sensor -->
+    <xacro:include filename="$(find anymal_c)/urdf/base/sensors/lidar/vlp-16-lite.urdf.xacro"/>
+    <xacro:vlp-16-lite name="${lidar_name}" parent="${name}_cage" simulation="${simulate_lidar}" topic="${lidar_topic}">
+      <origin xyz="0.0 0.0 0.1422" rpy="0.0 0.0 ${-pi/2}"/>
+    </xacro:vlp-16-lite>
+
+    <!-- Alphasense -->
+    <xacro:include filename="$(find anymal_c_rsl)/urdf/modules/alphasense/alphasense_macro.urdf.xacro"/>
+    <xacro:alphasense_macro  name="${alphasense_name}"
+                             parent="${lidar_name}"
+                             simulate_color_cameras="${simulate_color_cameras}"
+                             parameter_file="$(arg alphasense_parameter_file)"/>
+
+  </xacro:macro>
+
+</robot>

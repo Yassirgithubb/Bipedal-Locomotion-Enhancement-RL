@@ -1,0 +1,16 @@
+<?xml version="1.0"?>
+
+<robot xmlns:xacro="http://www.ros.org/wiki/xacro">
+
+  <xacro:if value="$(arg simulation)">
+    <!-- Camera simulation -->
+    <xacro:if value="${$(arg simulate_zoom_camera) or $(arg simulate_thermal_camera)}">
+      <gazebo reference="inspection_payload_camera">
+        <sensor type="camera" name="inspection_payload_camera_camera">
+          <plugin name="camera_controller" filename="libgazebo_ros_camera.so"/>
+        </sensor>
+      </gazebo>
+    </xacro:if>
+  </xacro:if>
+
+</robot>

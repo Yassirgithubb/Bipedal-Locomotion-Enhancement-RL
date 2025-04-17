@@ -1,0 +1,88 @@
+<?xml version="1.0"?>
+
+<robot xmlns:xacro="http://www.ros.org/wiki/xacro">
+
+  <xacro:macro name="protection_bars_macro" params="*origin
+                                            name:=protection_bars
+                                            parent:=base
+                                            face:=front
+                                            angle_bottom:=0.0
+                                            width1_bottom:=0.0
+                                            width2_bottom:=0.0
+                                            angle_right:=0.0
+                                            width1_right:=0.0
+                                            width2_right:=0.0
+                                            angle_left:=0.0
+                                            width1_left:=0.0
+                                            width2_left:=0.0
+                                            mesh:=true">
+
+    <joint name="${parent}_to_${name}" type="fixed">
+      <xacro:insert_block name="origin" />
+      <parent link="${parent}"/>
+      <child link="${name}"/>
+    </joint>
+
+
+    <xacro:macro name="protection_bar_collision_element_macro" params="*origin_bar
+                                                               length:=0.08 width:=0.005">
+      <collision>
+        <xacro:insert_block name="origin_bar" />
+        <geometry>
+          <box size="0.030 ${width} ${length}"/>
+        </geometry>
+      </collision>
+    </xacro:macro>
+
+
+    <link name="${name}">
+      <visual>
+        <origin xyz="0 0 0" rpy="0 0 ${pi}"/>
+        <geometry>
+          <mesh filename="package://anymal_c_rsl/urdf/protectors/bpearl_protection_bars.stl" scale=".001 .001 .001"/>
+        </geometry>
+        <material name="anymal_material"/>
+      </visual>
+      <inertial>
+        <mass value="0.499717559"/>
+        <origin xyz=" 0.079340318484
+                      0.000069247487
+                      -0.019714498477"/>
+        <inertia ixx= "0.002744694191342"
+                 ixy= "-0.000001651758707"
+                 ixz= "0.000767436360485"
+                 iyy= "0.006272427155836"
+                 iyz= "0.000001335278093"
+                 izz= "0.006200897129667"/>
+      </inertial>
+    </link>
+    <joint name="$bpearl_${face}_beam_origin_to_${name}_collision" type="fixed">
+      <!-- <xacro:insert_block name="origin" /> -->
+      <parent link="bpearl_${face}_beam_origin"/>
+      <child link="${name}_collision"/>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+    </joint>
+    <link name="${name}_collision">
+
+      <xacro:property name="d1"    value="0.090"/>
+      <xacro:property name="d2"    value="0.054"/>
+
+      <xacro:macro name="half_bar" params="yaw width1 width2">
+        <xacro:property name="yaw_offset"    value="${yaw + 65*pi/180}"/>
+        <xacro:protection_bar_collision_element_macro length="0.10" width="${width1}">
+          <origin xyz="${d1*cos(yaw_offset)} ${d1*sin(yaw_offset)} ${-0.02}"
+                  rpy="0.0 ${-pi * 0.09} ${yaw_offset} "/>
+        </xacro:protection_bar_collision_element_macro>
+        <xacro:protection_bar_collision_element_macro  length="0.090" width="${width2}">
+          <origin xyz="${d2*cos(yaw_offset)} ${d2*sin(yaw_offset)} ${0.053}"
+                  rpy="0.0  ${-pi * 0.32} ${yaw_offset} "/>
+        </xacro:protection_bar_collision_element_macro>
+      </xacro:macro>
+
+      <xacro:half_bar yaw="${angle_bottom/180.0*pi}" width1="${width1_bottom}" width2="${width2_bottom}"/>
+      <xacro:half_bar yaw="${-angle_right/180.0*pi}" width1="${width1_right}" width2="${width2_right}"/>
+      <xacro:half_bar yaw="${angle_left/180.0*pi}" width1="${width1_left}" width2="${width2_left}"/>
+    </link>
+  </xacro:macro>
+
+</robot>

@@ -1,0 +1,84 @@
+# This is an example file with place holders to show how the parameters for the alphasense URDF model should be structured.
+# Each robot should hold a similar file, filled in with calibrated data.
+# This file contains the calibration data that is used for simulation only! Data is obtained from CAD
+
+parent_to_imu:
+  pose:
+    x:  0.005303
+    y:  0.037340
+    z:  0.063319
+    roll: 0.0
+    pitch: 0.0
+    yaw:   0.0
+
+base_to_mesh:
+  pose:
+    x:  -0.364
+    y:  0.0
+    z:  0.0
+    roll:  0.0
+    pitch: 0.0
+    yaw:   0.0
+
+imu_to_cam0:
+  pose:
+    x:  0.04537774
+    y:  -0.07367025
+    z:  0.0225275
+    roll:  -1.5720552
+    pitch: -0.0025018
+    yaw:   -3.1392056
+
+imu_to_cam1:
+  pose:
+    x:  -0.0549134
+    y:  -0.07495668
+    z:  0.02110043
+    roll:  -1.5748043
+    pitch: -0.0003067
+    yaw:   -3.1363186
+
+imu_to_cam2:
+  pose:
+    x:  0.04275491
+    y:  -0.04977056
+    z:  0.05808629
+    roll:  -0.0024622
+    pitch: 0.0008607
+    yaw:   3.1377207
+
+imu_to_cam3:
+  pose:
+    x:  0.06873384
+    y:  -0.02210412
+    z:  0.02929201
+    roll:  -1.4000444
+    pitch: -0.0045942
+    yaw:   -1.568382
+
+imu_to_cam4:
+  pose:
+    x:  -0.00569282
+    y:  -0.07527652
+    z:  0.02277401
+    roll:  -1.5703236
+    pitch: -0.0004822
+    yaw:   -3.1378793
+
+imu_to_cam5:
+  pose:
+    x:  -0.07630108
+    y:  -0.01995696
+    z:  0.03155353
+    roll:  -1.3944719
+    pitch: 0.0007604
+    yaw:   1.570797
+
+imu_to_cam6:
+  pose:
+    x:  -0.0554172
+    y:  -0.05064799
+    z:  0.05769353
+    roll:  -0.002681
+    pitch: -0.001708
+    yaw:   3.1345393

@@ -1,0 +1,6 @@
+[flake8]
+ignore=E402,E501,W503,F401,F403,F405, E741
+extend-ignore = E203
+max-line-length = 120
+max-complexity = 18
+exclude=_*,.vscode,.git

@@ -1,0 +1,17 @@
+# This is an example file with place holders to show how the parameters for the front bpearl URDF model should be structured.
+# Each robot should hold a similar file, filled in with calibrated data.
+
+face: "front" # Options are "front" or "rear"
+
+bottom_bar:
+  angle: -4.0
+  width1: 0.019
+  width2: 0.026
+right_bar:
+  angle: 122.0
+  width1: 0.004
+  width2: 0.016
+left_bar:
+  angle: 129.0
+  width1: 0.004
+  width2: 0.016

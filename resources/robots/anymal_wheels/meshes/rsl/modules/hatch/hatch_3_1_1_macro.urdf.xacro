@@ -1,0 +1,48 @@
+<?xml version="1.0"?>
+<!-- This is a modified copy of 'anymal_c/urdf/base/hatch/hatch_3_1_1_macro.urdf.xacro' -->
+<robot xmlns:xacro="http://www.ros.org/wiki/xacro">
+
+  <xacro:macro name="hatch" params="name:=hatch
+                            parent:=base
+                            *origin">
+
+    <xacro:property name="Bh_r_BhBhcom_x" value= "0.116"/> <!--  [m] -->
+    <xacro:property name="Bh_r_BhBhcom_y" value= "0.0"/> <!--  [m] -->
+    <xacro:property name="Bh_r_BhBhcom_z" value= "0.0758"/> <!--  [m] -->
+    <xacro:property name="m_Bh"           value= "0.142"/> <!-- [kg] -->
+    <xacro:property name="Bh_Ixx_Bh"      value= "0.001"/> <!-- [kg * m^2] -->
+    <xacro:property name="Bh_Iyy_Bh"      value= "0.001"/> <!-- [kg * m^2] -->
+    <xacro:property name="Bh_Izz_Bh"      value= "0.001"/> <!-- [kg * m^2] -->
+    <xacro:property name="Bh_Ixy_Bh"      value= "0.0"/> <!-- [kg * m^2] -->
+    <xacro:property name="Bh_Ixz_Bh"      value= "0.0"/> <!-- [kg * m^2] -->
+    <xacro:property name="Bh_Iyz_Bh"      value= "0.0"/> <!-- [kg * m^2] -->
+
+
+    <!-- Fixed joint base hatch -->
+    <joint name="${parent}_${name}" type="fixed">
+      <parent link="${parent}"/>
+      <child link="${name}"/>
+      <xacro:insert_block name="origin"/>
+    </joint>
+
+    <!-- Hatch link -->
+    <link name="hatch">
+      <visual>
+        <origin xyz="0 0 0" rpy="0 0 0"/>
+        <geometry>
+          <mesh filename="package://anymal_c/urdf/base/hatch/hatch_3_1_1_mesh.dae"
+                scale="1.0 1.0 1.0"/>
+        </geometry>
+      </visual>
+      <inertial>
+        <origin   xyz="${Bh_r_BhBhcom_x} ${Bh_r_BhBhcom_y} ${Bh_r_BhBhcom_z}"
+                  rpy="0 0 0"/>
+        <mass     value="${m_Bh}"/>
+        <inertia  ixx="${Bh_Ixx_Bh}" ixy="${Bh_Ixy_Bh}" ixz="${Bh_Ixz_Bh}"
+                  iyy="${Bh_Iyy_Bh}" iyz="${Bh_Iyz_Bh}" izz="${Bh_Izz_Bh}"/>
+      </inertial>    
+    </link>
+
+  </xacro:macro>
+
+</robot>

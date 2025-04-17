@@ -1,0 +1,68 @@
+<?xml version="1.0"?>
+
+<robot xmlns:xacro="http://www.ros.org/wiki/xacro">
+
+  <!-- Velodyne sensor and cage; origin is the sensor frame -->
+  <xacro:macro name="anymal_velodyne" params="name:=lidar 
+                                              parent:=base 
+                                              simulation:=^
+                                              yaw:=0.0
+                                              topic:=/lidar/point_cloud
+                                              *origin">
+
+    <!--Velodyne cage -->
+    <xacro:property name="m_Vc"             value= "0.2"/> <!-- [kg] -->
+    <xacro:property name="Vc_r_Vccom_x"     value= "0.0642"/> <!-- [m] -->
+    <xacro:property name="Vc_r_Vccom_y"     value="-0.0102"/> <!-- [m] -->
+    <xacro:property name="Vc_r_Vccom_z"     value= "0.0033"/> <!-- [m] -->
+    <xacro:property name="Vc_Ixx_Vc"        value= "0.002318"/> <!-- [kg * m^2] -->
+    <xacro:property name="Vc_Iyy_Vc"        value= "0.002060"/> <!-- [kg * m^2] -->
+    <xacro:property name="Vc_Izz_Vc"        value= "0.002439"/> <!-- [kg * m^2] -->
+    <xacro:property name="Vc_Ixy_Vc"        value="-0.000001"/> <!-- [kg * m^2] -->
+    <xacro:property name="Vc_Ixz_Vc"        value= "0.000009"/> <!-- [kg * m^2] -->
+    <xacro:property name="Vc_Iyz_Vc"        value= "0.000333"/> <!-- [kg * m^2] -->
+
+    <xacro:property name="Vc_r_V_z"         value= "0.0687"/> <!-- [m] -->
+    <xacro:property name="q_Vc_V_yaw"       value= "${yaw}"/> <!-- [rad] -->
+    <xacro:property name="collision_radius" value= "0.07"/> <!-- [m] -->
+    <xacro:property name="collision_length" value= "0.12"/> <!-- [m] -->
+
+
+    <!-- parent to cage joint, located between mounting plate on trunk and the cage -->
+    <joint name="${parent}_to_${name}_cage" type="fixed">
+      <parent link="${parent}"/>
+      <child link="${name}_cage"/>
+      <xacro:insert_block name="origin"/>
+    </joint>
+
+    <!-- Velodyne cage link -->
+    <link name="${name}_cage">
+      <visual>
+        <origin xyz="0.0 0.0 0.0" rpy="0.0 0.0 0.0"/>
+        <geometry>
+          <mesh filename="package://anymal_c/urdf/base/sensors/lidar/cage_3_1_1_mesh.dae" scale="1.0 1.0 1.0"/>
+        </geometry>
+      </visual>
+      <collision>
+        <origin xyz="0 0 ${0.5*collision_length}" rpy="0 0 0"/>
+        <geometry>
+          <cylinder radius="${collision_radius}" length="${collision_length}"/>
+        </geometry>
+      </collision>
+      <inertial>
+        <origin xyz="${Vc_r_Vccom_x} ${Vc_r_Vccom_y} ${Vc_r_Vccom_z}" rpy="0.0 0.0 0.0"/>
+        <mass value="${m_Vc}"/>
+        <inertia ixx="${Vc_Ixx_Vc}" ixy="${Vc_Ixy_Vc}" ixz="${Vc_Ixz_Vc}" iyy="${Vc_Iyy_Vc}" iyz="${Vc_Iyz_Vc}" izz="${Vc_Izz_Vc}"/>
+      </inertial>
+    </link>
+
+    <!-- Velodyne Puck LITE sensor -->
+    <xacro:include filename="$(find anymal_c)/urdf/base/sensors/lidar/vlp-16-lite.urdf.xacro"/>
+    <xacro:vlp-16-lite name="${name}" parent="${name}_cage" simulation="${simulation}">
+      <origin xyz="0.0 0.0 ${Vc_r_V_z}" rpy="0.0 0.0 ${q_Vc_V_yaw}"/>
+    </xacro:vlp-16-lite>
+
+
+  </xacro:macro>
+
+</robot>
