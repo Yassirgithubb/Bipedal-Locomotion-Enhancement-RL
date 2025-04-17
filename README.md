@@ -32,6 +32,7 @@ To train these behaviors, we needed:
 
 3. **Dual-policy controller vs. Multi-task policy** comparison.
 
+4. Addition of a wheel at the end of the manipulator to facilitate rotation and translation.
 ---
 
 ## 🔍 Results Overview
@@ -46,7 +47,7 @@ To train these behaviors, we needed:
 
 ---
 
-## 📊 Important Figures
+## 📊 Important Figures and videos
 
 1. **Progressive Learning Results**
 ![Linear Velocity Tracking](figures/progressive_learning_1.jpg)
@@ -59,12 +60,12 @@ However, after 4000 iterations, the progress of the goal task becomes higher and
    <table>
   <tr>
     <td align="center">
-      <a href="videos/progressive_presentation.mp4">
+      <a href="https://drive.google.com/drive/u/0/folders/1JkkqyRg4MWzeSpwkUdAH1vAVYwSQaRM1">
         <b>Progressive Learning Policy</b>
       </a>
     </td>
     <td align="center">
-      <a href="videos/split_presentation.mp4">
+      <a href="https://drive.google.com/drive/u/0/folders/1JkkqyRg4MWzeSpwkUdAH1vAVYwSQaRM1">
         <b>Controller Using Separate Policies </b>
       </a>
     </td>
