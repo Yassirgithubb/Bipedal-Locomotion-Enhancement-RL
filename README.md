@@ -48,15 +48,30 @@ To train these behaviors, we needed:
 
 ## 📊 Important Figures
 
-> 💡 Display these figures at the appropriate points in your README or report to clearly support your results.
+1. **Progressive Learning Results**
+![Linear Velocity Tracking](figures/progressive_learning_1.jpg)
+![Linear Velocity Tracking](figures/progressive_learning_2.jpg)
+We can see that in the first iterations, the probability of sampling the goal task is low compared to the linear and angular 
+velocity tracking, meaning that the learning of these two tasks is progressing faster ( high reward derivative).
+However, after 4000 iterations, the progress of the goal task becomes higher and thus more environments are use to train the goal task.
 
-1. **Figure 7: Linear Velocity Tracking Plot**  
-   - 📍 Place under `Results → Linear Velocity Tracking`  
-   - Shows tracking performance across three command speeds.
-
-2. **Figure 8: Angular Velocity Tracking Plot**  
-   - 📍 Place under `Results → Angular Velocity Tracking`  
-   - Confirms smooth yaw rotation matching command.
+2. **Progressive Learning VS Dual-Policy **  
+   <table>
+  <tr>
+    <td align="center">
+      <a href="videos/progressive_presentation.mp4">
+        <img src="figures/thumb_linear.png" width="300"/><br/>
+        <b>Progressive Learning Policy</b>
+      </a>
+    </td>
+    <td align="center">
+      <a href="videos/split_presentation.mp4">
+        <img src="figures/thumb_angular.png" width="300"/><br/>
+        <b>Controller Using Separate Policies </b>
+      </a>
+    </td>
+  </tr>
+</table>
 
 3. **Figure 9 & 10: Task Probability Distributions**  
    - 📍 Place under `Results → Multi-task Framework`  
@@ -101,6 +116,12 @@ The core implementation of progressive learning and task control was made in the
 
 ---
 
+
+## 🧾 Main References
+
+- Hwangbo et al., *Learning Agile and Dynamic Motor Skills for Legged Robots*
+- Colas et al., *CURIOUS: Intrinsically Motivated Multi-goal RL*
+- Schulman et al., *Proximal Policy Optimization Algorithms*
 
 ## ✅ Next Steps
 
