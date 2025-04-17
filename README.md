@@ -55,18 +55,16 @@ We can see that in the first iterations, the probability of sampling the goal ta
 velocity tracking, meaning that the learning of these two tasks is progressing faster ( high reward derivative).
 However, after 4000 iterations, the progress of the goal task becomes higher and thus more environments are use to train the goal task.
 
-2. **Progressive Learning VS Dual-Policy **  
+2. **Progressive Learning VS Dual-Policy Videos**  
    <table>
   <tr>
     <td align="center">
       <a href="videos/progressive_presentation.mp4">
-        <img src="figures/thumb_linear.png" width="300"/><br/>
         <b>Progressive Learning Policy</b>
       </a>
     </td>
     <td align="center">
       <a href="videos/split_presentation.mp4">
-        <img src="figures/thumb_angular.png" width="300"/><br/>
         <b>Controller Using Separate Policies </b>
       </a>
     </td>
