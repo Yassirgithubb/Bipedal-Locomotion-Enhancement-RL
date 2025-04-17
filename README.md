@@ -34,7 +34,32 @@ To train these behaviors, we needed:
 
 4. Addition of a wheel at the end of the manipulator to facilitate rotation and translation.
 ---
+## 📽️ Demonstration Videos
+- [Kangaroo Motion](https://drive.google.com/file/d/1SFiUKoMaFAM3-51EOSN1fD06h9Dt28j_/view?usp=sharing)
+- [Jugling](https://drive.google.com/file/d/1k-zf7CSnbp7WppjwLc7x-QW-uGW0GNtk/view?usp=sharing)
+- [Linear Velocity Tracking](https://drive.google.com/file/d/1a5OQ3h-EqsLgHSbQBkzWTKuQnLkOkMKw/view?usp=sharing)  
+- [Progressive Learning Evolution](https://drive.google.com/file/d/1zVHx9hkG_-8_PjoseDZ5p9DdMOGVbMbP/view?usp=sharing)  
+- [Dual Policy Goal Controller](https://drive.google.com/file/d/1CYQPU5FbiUqJYAh9tYlhHY-rACM8aCLW/view?usp=sharing)
 
+---
+## 🗂️ Main Code Contributions
+
+The core implementation of progressive learning and task control was made in the following locations:
+
+### 1. `legged_gym/rewards/reward_manager_progressive_learning.py`
+- Implements per-task reward logic with masking.
+- Supports both shared and task-specific reward functions.
+- Tracks episode-level statistics for logging and curriculum.
+
+### 2. `legged_gym/envs/locomotion/alma_bipedal/`
+- Samples and assigns new tasks per environment at reset using ε-greedy and task distributions.
+- Updates reward manager dynamically to reflect current tasks.
+- Addition of environment to train payload carrying
+
+
+### 3. Modification of the Reinforcement Learning pipeline to be able to include the task codes and ids into the model, as well as to train different tasks at the same time.
+
+---
 ## 🔍 Results Overview
 
 | Task                         | Method              | Performance                                |
@@ -60,60 +85,33 @@ However, after 4000 iterations, the progress of the goal task becomes higher and
    <table>
   <tr>
     <td align="center">
-      <a href="https://drive.google.com/drive/u/0/folders/1JkkqyRg4MWzeSpwkUdAH1vAVYwSQaRM1">
+      <a href="https://drive.google.com/file/d/1zVHx9hkG_-8_PjoseDZ5p9DdMOGVbMbP/view?usp=sharing">
         <b>Progressive Learning Policy</b>
       </a>
     </td>
     <td align="center">
-      <a href="https://drive.google.com/drive/u/0/folders/1JkkqyRg4MWzeSpwkUdAH1vAVYwSQaRM1">
+      <a href="https://drive.google.com/file/d/1CYQPU5FbiUqJYAh9tYlhHY-rACM8aCLW/view?usp=sharing">
         <b>Controller Using Separate Policies </b>
       </a>
     </td>
   </tr>
 </table>
+The dual-policy approach achieves faster, more stable, and direct goal-reaching by explicitly separating rotation and translation
+into two specialized policies controlled by a simple high-level planner. In contrast, progressive learning trains
+a single unified policy over multiple tasks, but resulted in suboptimal and less stable behaviors due to the complexity
+of simultaneously mastering all skills.
 
-3. **Figure 9 & 10: Task Probability Distributions**  
-   - 📍 Place under `Results → Multi-task Framework`  
-   - Demonstrates how task probabilities evolve through training.
-
-4. **Figure 11: Goal Comparison Setup**  
-   - 📍 Place under `Results → Comparison between the two methods`  
-   - Compares trajectories of multi-task vs dual-policy controller.
-
-5. **Figure 12: Payload Torque Comparison**  
-   - 📍 Place under `Results → Payload`  
-   - Visualizes the advantage of manipulator support over ANYmal biped mode.
-
----
-
-## 🗂️ Main Code Contributions
-
-The core implementation of progressive learning and task control was made in the following locations:
-
-### 1. `legged_gym/rewards/reward_manager_progressive_learning.py`
-- Implements per-task reward logic with masking.
-- Supports both shared and task-specific reward functions.
-- Tracks episode-level statistics for logging and curriculum.
-
-### 2. `legged_gym/envs/locomotion/alma_bipedal/`
-- Samples and assigns new tasks per environment at reset using ε-greedy and task distributions.
-- Updates reward manager dynamically to reflect current tasks.
-- Addition of environment to train payload carrying
-
-
-### 3. Modification of the Reinforcement Learning pipeline to be able to include the task codes and ids into the model, as well as to train different tasks at the same time.
+3.**Improved Payload Capacity** 
+![Linear Velocity Tracking](figures/Payload_Torque.jpg) 
+The payload test showed that using the manipulator as support allowed the robot to carry up to 25kg, compared to 18kg in a standard bipedal setup. 
+This improved load capacity is due to better weight distribution and reduced joint torque.
 
 ---
 
 
-## 📽️ Demonstration Videos
 
-- [🦘 Linear Velocity Tracking](https://drive.google.com/file/d/1bIIWS_wGmsQUNnFIu5DeubK2D0iKDmMg/view?usp=sharing)  
-- [↪️ Angular Velocity Tracking](https://drive.google.com/file/d/1vVctATsAsQNo9GKdM9feyHwfrl_I_gd3/view?usp=sharing)  
-- [📚 Progressive Learning Evolution](https://drive.google.com/file/d/1EqcPE1w4d-CgCsMRLE3VwVi1fI80E5st/view?usp=sharing)  
-- [🎮 Dual Policy Goal Controller](https://drive.google.com/file/d/1JeNCs7MOXyBJL6HjFkUrCkdEJaCItwsP/view?usp=sharing)
 
----
+
 
 
 ## 🧾 Main References
