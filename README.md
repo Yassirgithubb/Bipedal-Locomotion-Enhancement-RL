@@ -1,5 +1,7 @@
 # Alma Robot Bipedal Locomotion Enhancement Using Reinforcement Learning
 
+This project builds on the open-source framework provided by the [legged_gym repository](https://github.com/leggedrobotics/legged_gym), developed by the Robotic Systems Lab at ETH Zurich.
+
 This project extends the Alma robot’s bipedal locomotion capabilities by leveraging its **manipulator as a stabilizing support leg**, freeing the front legs for advanced manipulation. To reach complex control behaviors like **goal-directed walking**, we implemented **progressive learning** within a **multi-task reinforcement learning** framework.
 
 ## 📌 Motivation
